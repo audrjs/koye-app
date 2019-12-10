@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import MainView from './src/views/MainView';
+import MainView from './src/views/main_view';
 
 export default function App() {
   return (

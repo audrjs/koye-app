@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 
-import { StyleSheet, View, Image, SafeAreaView, FlatList, Text,Platform } from 'react-native';
+import { StyleSheet, View, Text, Platform,FlatList } from 'react-native';
 import { Dimensions } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import Slideshow from 'react-native-image-slider-show';
 import { getHotStoresList } from '../services/main_view_service';
-
 
 const win = Dimensions.get('window');
 
@@ -13,15 +12,16 @@ const win = Dimensions.get('window');
 export default class MainView extends Component {
   constructor(props) {
     super(props);
-    
     this.state = {
       position: 1,
       interval: null,
-      dataSource: [],
-      adStores:[],
-      hotStores:[],
+      dataSource:[],
+      adStores: [],
+      hotStores: [],
     };
   }
+
+
 
   componentWillMount() {
     this.setState({
@@ -32,7 +32,7 @@ export default class MainView extends Component {
       }, 2000)
     });
 
-    
+
   }
 
   componentWillUnmount() {
@@ -41,47 +41,55 @@ export default class MainView extends Component {
 
   componentDidMount = () => {
     getHotStoresList()
-          .then((res) => {
-            // console.log(this.state.dataSource);
-              if(res.message === 'Not Found') {
-              
-              }
-            else {
-              
-              const tempAdStores = [];
-              const tempHotStores = [];
-          
-              res.hotstores.forEach(element => {
-                if(element.result.priority <= 3){
-                  element.result.title = element.result.name;
-  
-                  tempAdStores.push(element.result);
+      .then((res) => {
+        // console.log(this.state.dataSource);
+        if (res.message === 'Not Found') {
 
-                  }
-                  else {
-                  element.result.title = element.result.name;
-                  tempHotStores.push(element.result);
-                  }
-                
-              });
-              
-              this.setState({
-                adStores:tempAdStores,
-                hotStores:tempHotStores,
-              });
+        }
+        else {
+
+          const tempAdStores = [];
+          const tempHotStores = [];
+
+          res.hotstores.forEach(element => {
+
+            if (element.result.priority <= 3) {
+              element.result.title = element.result.name;
+
+              tempAdStores.push(element.result);
+
             }
-        });
- }
+            else {
+              element.result.title = element.result.name;
+              element.result.key = element.result._id;
+              tempHotStores.push(element.result);
+
+            }
+
+          });
+          this.setState({
+            adStores: tempAdStores,
+            hotStores: tempHotStores
+          });
+
+          console.log(this.state.hotStores);
+
+        }
+      });
+  }
 
   render() {
     return (
 
-      <View style={{ flexDirection: 'col' ,flex: 1,
-      alignItems: 'center',
-      paddingTop: (Platform.OS) === 'ios' ? 0 : 0,
-      backgroundColor: '#FFF8E1'}}>
+      <View style={{
+        flexDirection: 'col', flex: 1,
+        alignItems: 'center',
+        paddingTop: (Platform.OS) === 'ios' ? 0 : 0,
+        backgroundColor: '#FFF8E1'
+      }}>
 
         <Slideshow
+
           dataSource={this.state.adStores}
           position={this.state.position}
           height={win.height / 3.3}
@@ -93,6 +101,11 @@ export default class MainView extends Component {
         <Searchbar style={styles.search}
           placeholder="검색"
         />
+
+        <FlatList
+          data={this.state.hotStores}
+          renderItem={({ item }) => <Text style={styles.item}>{item.address}</Text>}
+        />
       </View>
     );
   }
@@ -100,7 +113,7 @@ export default class MainView extends Component {
 
 const styles = StyleSheet.create({
 
- 
+
   search: {
 
     height: win.height / 20,
@@ -117,7 +130,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
   },
-  
+
 });
 
 

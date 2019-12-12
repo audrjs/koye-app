@@ -1,21 +1,78 @@
-
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from 'react-native-vector-icons';
+import { createDrawerNavigator, createStackNavigator, } from 'react-navigation-stack';
+import { createBottomTabNavigator, } from 'react-navigation-tabs'
+import { createAppContainer } from 'react-navigation'
 import MainView from './src/views/main_view';
+import BlogView from './src/views/blog_view';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <MainView></MainView>
-    </View>
-  ); 
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+
+const HomeStack = createStackNavigator(
+  {
+    Home: { screen: MainView },
   },
-});
+  {
+    defaultNavigationOptions: {
+      headerStyle: {
+        backgroundColor: '#42f44b',
+      },
+      headerTintColor: '#FFFFFF',
+      title: 'Home',
+    },
+  }
+);
+
+const SettingsStack = createStackNavigator(
+  {
+    //Defination of Navigaton from setting screen
+    Blog: { screen: BlogView},
+    // Details: { screen: DetailsScreen },
+    // Profile: { screen: ProfileScreen },
+  },
+  {
+    //For React Navigation 2.+ change defaultNavigationOptions->navigationOptions
+    defaultNavigationOptions: {
+      //Header customization of the perticular Screen
+      headerStyle: {
+        backgroundColor: '#42f44b',
+      },
+      headerTintColor: '#FFFFFF',
+      title: 'Settings',
+      //Header title
+    },
+  }
+);
+
+const App = createBottomTabNavigator(
+  {
+    Home: { screen: MainView },
+    Blog: {screen:BlogView}
+  },
+  {
+    //For React Navigation 2.+ change defaultNavigationOptions->navigationOptions
+    defaultNavigationOptions: ({ navigation }) => ({
+      tabBarIcon: ({ focused, horizontal, tintColor }) => {
+        const { routeName } = navigation.state;
+        let IconComponent = Ionicons;
+        let iconName;
+        if (routeName === 'Home') {
+          // iconName = `ios-information-circle${focused ? '' : '-outline'}`;
+    
+        } else if (routeName === 'Blog') {
+          // iconName = `ios-options${focused ? '' : '-outline'}`;
+        }
+
+        return <IconComponent name={iconName} size={25} color={tintColor} />;
+      },
+    }),
+    tabBarOptions: {
+      activeTintColor: '#42f44b',
+      inactiveTintColor: 'gray',
+    },
+  }
+);
+
+export default createAppContainer(App);
+

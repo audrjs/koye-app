@@ -19,7 +19,7 @@ const HomeStack = createStackNavigator(
         backgroundColor: '#42f44b',
       },
       headerTintColor: '#FFFFFF',
-      title: 'Home',
+      title: '검색',
     },
   }
 );
@@ -39,7 +39,7 @@ const SettingsStack = createStackNavigator(
         backgroundColor: '#42f44b',
       },
       headerTintColor: '#FFFFFF',
-      title: 'Settings',
+      title: '블로그',
       //Header title
     },
   }
@@ -47,8 +47,8 @@ const SettingsStack = createStackNavigator(
 
 const App = createBottomTabNavigator(
   {
-    Home: { screen: MainView },
-    Blog: {screen:BlogView}
+    검색: { screen: MainView },
+    블로그: {screen:BlogView}
   },
   {
     //For React Navigation 2.+ change defaultNavigationOptions->navigationOptions
@@ -57,10 +57,10 @@ const App = createBottomTabNavigator(
         const { routeName } = navigation.state;
         let IconComponent = Ionicons;
         let iconName;
-        if (routeName === 'Home') {
-          // iconName = `ios-information-circle${focused ? '' : '-outline'}`;
+        if (routeName === '검색') {
+          iconName = `ios-information-circle${focused ? '' : '-outline'}`;
     
-        } else if (routeName === 'Blog') {
+        } else if (routeName === '블로그') {
           // iconName = `ios-options${focused ? '' : '-outline'}`;
         }
 

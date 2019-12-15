@@ -4,14 +4,16 @@ import { Ionicons } from 'react-native-vector-icons';
 import { createDrawerNavigator, createStackNavigator, } from 'react-navigation-stack';
 import { createBottomTabNavigator, } from 'react-navigation-tabs'
 import { createAppContainer } from 'react-navigation'
-import MainView from './src/views/main_view';
+import SearchView from './src/views/search_view';
 import BlogView from './src/views/blog_view';
+import UploadView from './src/views/upload_view';
 
 
 
-const HomeStack = createStackNavigator(
+
+const SearchStack = createStackNavigator(
   {
-    Home: { screen: MainView },
+    Search: { screen: SearchView },
   },
   {
     defaultNavigationOptions: {
@@ -24,10 +26,25 @@ const HomeStack = createStackNavigator(
   }
 );
 
-const SettingsStack = createStackNavigator(
+const UploadStack = createStackNavigator(
   {
-    //Defination of Navigaton from setting screen
-    Blog: { screen: BlogView},
+    Upload: { screen: UploadView },
+  },
+  {
+    defaultNavigationOptions: {
+      headerStyle: {
+        backgroundColor: '#42f44b',
+      },
+      headerTintColor: '#FFFFFF',
+      title: '비즈니스 업로드',
+    },
+  }
+);
+
+const BlogStack = createStackNavigator(
+  {
+
+    Blog: { screen: BlogView },
     // Details: { screen: DetailsScreen },
     // Profile: { screen: ProfileScreen },
   },
@@ -47,8 +64,9 @@ const SettingsStack = createStackNavigator(
 
 const App = createBottomTabNavigator(
   {
-    검색: { screen: MainView },
-    블로그: {screen:BlogView}
+    검색: { screen: SearchView },
+    블로그: { screen: BlogView },
+    업로드: { screen: UploadView }
   },
   {
     //For React Navigation 2.+ change defaultNavigationOptions->navigationOptions
@@ -58,9 +76,12 @@ const App = createBottomTabNavigator(
         let IconComponent = Ionicons;
         let iconName;
         if (routeName === '검색') {
-          iconName = `ios-information-circle${focused ? '' : '-outline'}`;
-    
+          // iconName = `ios-information-circle${focused ? '' : '-outline'}`;
+
         } else if (routeName === '블로그') {
+          // iconName = `ios-options${focused ? '' : '-outline'}`;
+        }
+        else if (routeName === '업로드') {
           // iconName = `ios-options${focused ? '' : '-outline'}`;
         }
 

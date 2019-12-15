@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Platform, FlatList, Image, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Platform, FlatList, Image, Button, TouchableOpacity, Dimensions } from 'react-native';
 import { ListItem, Avata, Divider } from 'react-native-elements'
-import { Dimensions } from 'react-native';
 import { Searchbar, Card } from 'react-native-paper';
 import Slideshow from 'react-native-image-slider-show';
 import { getHotStoresList } from '../services/main_view_service';
 import { Rating, AirbnbRating } from 'react-native-ratings'
+import CallButton from '../buttons/call_button';
+import NaviButton from '../buttons/navi_button';
+
 
 const win = Dimensions.get('window');
 
 
-export default class MainView extends Component {
+export default class SearchView extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -22,8 +24,6 @@ export default class MainView extends Component {
     };
   }
 
-
-
   componentWillMount() {
     this.setState({
       interval: setInterval(() => {
@@ -32,8 +32,6 @@ export default class MainView extends Component {
         });
       }, 2000)
     });
-
-
   }
 
   componentWillUnmount() {
@@ -43,7 +41,8 @@ export default class MainView extends Component {
   componentDidMount = () => {
     getHotStoresList()
       .then((res) => {
-        // console.log(this.state.dataSource);
+
+
         if (res.message === 'Not Found') {
 
         }
@@ -82,9 +81,7 @@ export default class MainView extends Component {
   renderItem = ({ item }) => (
 
     <TouchableOpacity onPress={this.openPopup}>
-
-
-      <View style={{ flex: 1, flexDirection: 'col', margin: 2}}>
+      <View style={{ flex: 1, flexDirection: 'col', margin: 2 }}>
         <View style={{ flex: 1, flexDirection: 'row', borderColor: 'gray', borderTopWidth: 0.2, backgroundColor: 'white', margin: 2 }}>
           <View style={{ flex: 1, flexDirection: 'col' }}>
             <Image
@@ -98,75 +95,56 @@ export default class MainView extends Component {
               flex: 1,
               flexDirection: 'col',
             }}>
-            <Text style={{
-              marginLeft: 20, fontSize: 20, paddingTop: 10,
-              fontWeight: 'bold',
-            }}>{item.name}</Text>
+
+            <Text style={styles.store_title}>{item.name}</Text>
 
             <AirbnbRating style={{ margin: 30 }}
               starContainerStyle={{
                 alignSelf: "flex-start",
                 margin: 20
               }}
-              size={20}
+              size={15}
               imageSize={30}
               isDisabled={true}
               showRating={false}
               defaultRating={item.rate}
             />
-            <Text style={{
-              fontWeight: 'bold',
-              marginLeft: 20, fontSize: 10, paddingBottom: 10
-            }}>{item.address}</Text>
 
-            <Text style={{
-              fontWeight: 'bold',
-              marginLeft: 20, fontSize: 10, paddingBottom: 10
-            }}>{item.open + '-' + item.close}</Text>
-            <Text style={{
-              marginLeft: 20, fontSize: 10
-            }}>{item.menu.join(",")}</Text>
+            <Text style={styles.store_subtitle}>{item.address}</Text>
+            <Text style={styles.store_subtitle}>{item.phone}</Text>
+            <Text style={styles.store_subtitle}>{item.open + '-' + item.close}</Text>
+            <Text style={styles.store_subtitle}>{item.menu.join(",")}</Text>
           </View>
         </View>
 
-
-
         <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-between' }}>
-
-
-          < View style={styles.callButtonContainer}>
-            <Button
-              onPress={this._onPressButton}
-              title="전화하기"
-              color='white'
-            />
-
-          </View>
-          <View style={styles.naviButtonContainer}>
-            <Button
-              onPress={this._onPressButton}
-              title="네비하기 (0.5 mi)"
-              color='white'
-            />
-          </View>
+          <CallButton title="전화하기"></CallButton>
+          <NaviButton title="네비하기"></NaviButton>
         </View>
 
       </View>
     </TouchableOpacity>
   )
 
+
   render() {
+
     return (
 
       <View style={{
         flexDirection: 'col', flex: 1,
         alignItems: 'center',
-        paddingTop: (Platform.OS) === 'ios' ? 0 : 0,
+        paddingTop: (Platform.OS) === 'ios' ? 1 : 1,
         backgroundColor: 'white'
       }}>
 
-        <Slideshow
-
+        {this.state.adStores.length == 0 && <Image
+          style={{ width: win.width, height: win.height / 3.3, resizeMode: 'stretch' }}
+          source={require('../../assets/default_img.jpg')}
+        />
+        }
+        
+        {this.state.adStores.length > 0 && <Slideshow
           dataSource={this.state.adStores}
           position={this.state.position}
           height={win.height / 3.3}
@@ -174,12 +152,11 @@ export default class MainView extends Component {
           indicatorSelectedColor={'white'}
           containerStylee={styles.banner}
           onPositionChanged={position => this.setState({ position })} />
-
+        }
         <Searchbar style={styles.search}
           placeholder="검색"
         />
-
-        <FlatList style={{ width: win.width / 1.05, height: win.height / 5, margin: 10 }}
+        <FlatList style={styles.list}
           data={this.state.hotStores}
           renderItem={this.renderItem} />
       </View>
@@ -189,45 +166,33 @@ export default class MainView extends Component {
 
 const styles = StyleSheet.create({
 
-
   search: {
-
     height: win.height / 20,
     margin: 10
   },
+  list: {
+    width: win.width / 1.05,
+    height: win.height / 5,
+    margin: 10
 
+  },
   item: {
     backgroundColor: '#f9c2ff',
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
   },
-  title: {
-    fontSize: 32,
+  store_title: {
+    marginLeft: 20,
+    fontSize: 15,
+    paddingTop: 10,
+    fontWeight: 'bold',
   },
-  subtitleView: {
-    flexDirection: 'row',
-
-  },
-  ratingImage: {
-    height: win.height / 10,
-    width: win.width / 5
-
-  },
-  naviButtonContainer: {
-    // marginLeft: 20,
-    width: win.width / 2,
-    backgroundColor: '#0073bb',
-    borderRadius:5
-  },
-  callButtonContainer: {
-    marginLeft: 10,
-    width: win.width / 2.5,
-    backgroundColor: '#0073bb',
-    borderRadius:5
-
-  },
-
+  store_subtitle: {
+    marginLeft: 20,
+    fontSize: 10,
+    paddingBottom: 10
+  }
 });
 
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Platform, FlatList, Image, Button, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, Platform, FlatList, Image, Button, TouchableOpacity, Dimensions, ActivityIndicator, NetInfo } from 'react-native';
 import { ListItem, Avata, Divider } from 'react-native-elements'
 import { Searchbar, Card } from 'react-native-paper';
 import Slideshow from 'react-native-image-slider-show';
@@ -8,9 +8,7 @@ import { Rating, AirbnbRating } from 'react-native-ratings'
 import CallButton from '../buttons/call_button';
 import NaviButton from '../buttons/navi_button';
 
-
 const win = Dimensions.get('window');
-
 
 export default class SearchView extends Component {
   constructor(props) {
@@ -18,9 +16,10 @@ export default class SearchView extends Component {
     this.state = {
       position: 1,
       interval: null,
+      loading: true,
       dataSource: [],
-      adStores: [],
-      hotStores: [],
+      bannerStoresList: [],
+      hotStoresList: [],
     };
   }
 
@@ -39,23 +38,24 @@ export default class SearchView extends Component {
   }
 
   componentDidMount = () => {
+
     getHotStoresList()
       .then((res) => {
 
-
         if (res.message === 'Not Found') {
-
+          console.log(res);
         }
+
         else {
 
-          const tempAdStores = [];
+          const tempBannerStores = [];
           const tempHotStores = [];
 
           res.hotstores.forEach(element => {
 
             if (element.result.priority <= 3) {
-              element.result.title = element.result.name;
 
+              element.result.title = element.result.name;
               tempAdStores.push(element.result);
 
             }
@@ -68,12 +68,11 @@ export default class SearchView extends Component {
 
           });
           this.setState({
-            adStores: tempAdStores,
-            hotStores: tempHotStores
+            bannerStoresList: tempBannerStores,
+            hotStoresList: tempHotStores
           });
 
-          console.log(this.state.hotStores);
-
+          this.loading = false;
         }
       });
   }
@@ -85,10 +84,9 @@ export default class SearchView extends Component {
         <View style={{ flex: 1, flexDirection: 'row', borderColor: 'gray', borderTopWidth: 0.2, backgroundColor: 'white', margin: 2 }}>
           <View style={{ flex: 1, flexDirection: 'col' }}>
             <Image
-              style={{ width: win.width / 2.5, height: win.width / 2.5, marginLeft: 10, margin: 10, borderRadius: 5, }}
-              source={{ uri: item.url }}
+              style={{ width: win.width / 2.5, height: win.width / 2.5, marginLeft: 10, margin: 20, borderRadius: 5, }}
+              source={{ uri: item.main_img }}
             />
-
           </View>
           <View
             style={{
@@ -110,17 +108,17 @@ export default class SearchView extends Component {
               defaultRating={item.rate}
             />
 
-            <Text style={styles.store_subtitle}>{item.address}</Text>
+            <Text style={styles.store_subtitle}>{item.address + "," + item.city + "," + item.state + "," + item.zipcode}</Text>
             <Text style={styles.store_subtitle}>{item.phone}</Text>
-            <Text style={styles.store_subtitle}>{item.open + '-' + item.close}</Text>
+            <Text style={styles.store_subtitle}>{item.open % 12 + (item.open < 12 ? "am" : "pm") + '-' + item.close%12 + (item.close < 12 ? "am" : "pm")}</Text>
             <Text style={styles.store_subtitle}>{item.menu.join(",")}</Text>
           </View>
         </View>
 
-        <View style={{ flex: 2, flexDirection: 'row', justifyContent: 'space-between' }}>
-          <CallButton title="전화하기"></CallButton>
+        {/* <View style={{ flex: 2, flexDirection: 'row'}}>
           <NaviButton title="네비하기"></NaviButton>
-        </View>
+          <CallButton title="Call"></CallButton>
+        </View> */}
 
       </View>
     </TouchableOpacity>
@@ -137,27 +135,24 @@ export default class SearchView extends Component {
         paddingTop: (Platform.OS) === 'ios' ? 1 : 1,
         backgroundColor: 'white'
       }}>
-
-        {this.state.adStores.length == 0 && <Image
-          style={{ width: win.width, height: win.height / 3.3, resizeMode: 'stretch' }}
-          source={require('../../assets/default_img.jpg')}
-        />
+        {this.loading == true &&
+          <ActivityIndicator style={styles.loading} size="large" color="#0000ff" />
         }
-        
-        {this.state.adStores.length > 0 && <Slideshow
-          dataSource={this.state.adStores}
+
+        <Slideshow
+          dataSource={this.state.bannerStoresList}
           position={this.state.position}
           height={win.height / 3.3}
           indicatorColor={'white'}
           indicatorSelectedColor={'white'}
           containerStylee={styles.banner}
           onPositionChanged={position => this.setState({ position })} />
-        }
+
         <Searchbar style={styles.search}
           placeholder="검색"
         />
         <FlatList style={styles.list}
-          data={this.state.hotStores}
+          data={this.state.hotStoresList}
           renderItem={this.renderItem} />
       </View>
     );
@@ -192,6 +187,16 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     fontSize: 10,
     paddingBottom: 10
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 99,
   }
 });
 

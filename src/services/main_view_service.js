@@ -4,7 +4,6 @@ const { apiUrl } = getEnvVars();
 
 export const getHotStoresList = () => {
 
-    // const url = Config.serverUrl+'/main';
     console.log(`${apiUrl}/main`);
     return fetch(`${apiUrl}/main`, {
            method: 'GET'
@@ -12,4 +11,15 @@ export const getHotStoresList = () => {
         .catch((error) => {
            console.error(error);
         });
+}
+
+export const getBannerStoresList = () => {
+
+   console.log(`${apiUrl}/main`);
+   return fetch(`${apiUrl}/main`, {
+          method: 'GET'
+       }).then((res) => res.json())
+       .catch((error) => {
+          console.error(error);
+       });
 }

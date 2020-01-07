@@ -26,9 +26,10 @@ export default class NaviButton extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        width: win.width / 2.5,
+        width: win.width / 10,
+        height:win.width/10,
         backgroundColor: '#3897f0',
-        borderRadius: 5
+        borderRadius: win.width / 10,
     },
 });
 
